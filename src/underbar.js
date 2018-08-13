@@ -112,9 +112,23 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array, isSorted, iterator) {
-    return _.filter(array, function(elem, i, array) {
-      return _.indexOf(array, elem) === i;
-    })
+    var hash = {};
+    var unique = [];
+
+    iterator = (isSorted && iterator) || _.identity;
+    
+    _.each(array, function(item) {
+      var transformed = iterator(item);
+      if (hash[iterator(item)] === undefined) {
+        hash[iterator(item)] = item;
+      }
+    });
+
+    _.each(hash, function(value) {
+      unique.push(value);
+    });
+    
+    return unique;
   };
 
 
@@ -296,8 +310,8 @@
     var alreadyCalled = false;
     var result;
 
-    // TIP: We'll return a new function that delegates to the old one, but only
-    // if it hasn't been called before.
+    // // TIP: We'll return a new function that delegates to the old one, but only
+    // // if it hasn't been called before.
     return function() {
       if (!alreadyCalled) {
         // TIP: .apply(this, arguments) is the standard way to pass on all of the
@@ -308,6 +322,7 @@
       // The new function always returns the originally computed result.
       return result;
     };
+    
   };
 
   // Memorize an expensive function's results by storing them. You may assume
